@@ -44,10 +44,7 @@ function $garbageCollectDetachedDeepChildNodes(
   nodeMap: NodeMap,
   dirtyNodes: Map<NodeKey, IntentionallyMarkedAsDirtyElement>,
 ): void {
-  const children = node.__children;
-  const childrenLength = children.length;
-  for (let i = 0; i < childrenLength; i++) {
-    const childKey = children[i];
+  node.forEachChild((_, childKey) => {
     const child = nodeMap.get(childKey);
     if (child !== undefined && child.__parent === parentKey) {
       if ($isElementNode(child)) {
@@ -66,7 +63,7 @@ function $garbageCollectDetachedDeepChildNodes(
       }
       nodeMap.delete(childKey);
     }
-  }
+  })
 }
 
 export function $garbageCollectDetachedNodes(
