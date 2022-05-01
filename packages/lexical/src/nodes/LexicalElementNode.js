@@ -209,6 +209,8 @@ export class ElementNode extends LexicalNode {
           return childNode;
         }
         next = childNode.__next;
+      } else {
+        next = null;
       }
     }
     return null;
