@@ -220,7 +220,7 @@ export class CollabElementNode {
       throw new Error('Should never happen');
     }
     const key = lexicalNode.__key;
-    const prevLexicalChildrenKeys = lexicalNode.__children;
+    const prevLexicalChildrenKeys = lexicalNode.getChildrenKeys();
     const nextLexicalChildrenKeys = [];
     const lexicalChildrenKeysLength = prevLexicalChildrenKeys.length;
     const collabChildren = this._children;
@@ -388,8 +388,8 @@ export class CollabElementNode {
   ): void {
     const prevLexicalNode = this.getPrevNode(prevNodeMap);
     const prevChildren =
-      prevLexicalNode === null ? [] : prevLexicalNode.__children;
-    const nextChildren = nextLexicalNode.__children;
+      prevLexicalNode === null ? [] : prevLexicalNode.getChildrenKeys();
+    const nextChildren = nextLexicalNode.getChildrenKeys();
     const prevEndIndex = prevChildren.length - 1;
     const nextEndIndex = nextChildren.length - 1;
     const collabNodeMap = binding.collabNodeMap;
@@ -590,7 +590,9 @@ function lazilyCloneElementNode(
 ): ElementNode {
   if (writableLexicalNode === undefined) {
     const clone = lexicalNode.getWritable();
-    clone.__children = nextLexicalChildrenKeys;
+    clone.__first = nextLexicalChildrenKeys[0];
+    clone.__last = nextLexicalChildrenKeys[nextLexicalChildrenKeys.length - 1];
+    clone.__size = nextLexicalChildrenKeys.length;
     return clone;
   }
   return writableLexicalNode;

@@ -377,7 +377,7 @@ function $createOffsetNode(
   const start = state.offset;
 
   if ($isElementNode(node)) {
-    const childKeys = node.__children;
+    const childKeys = node.getChildrenKeys();
     const blockIsEmpty = childKeys.length === 0;
 
     const child = blockIsEmpty
@@ -477,7 +477,7 @@ export function $createOffsetView(
   const state = {offset: 0, prevIsBlock: false};
   const node = $createOffsetChild(
     state,
-    root.__children,
+    root.getChildrenKeys(),
     null,
     nodeMap,
     offsetMap,

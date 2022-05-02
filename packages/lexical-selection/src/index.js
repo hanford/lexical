@@ -40,11 +40,15 @@ export function $cloneWithProperties<T: LexicalNode>(node: T): T {
   const constructor = latest.constructor;
   const clone = constructor.clone(latest);
   clone.__parent = latest.__parent;
+  clone.__next = latest.__next;
+  clone.__prev = latest.__prev;
   if ($isElementNode(latest) && $isElementNode(clone)) {
-    clone.__children = Array.from(latest.__children);
     clone.__format = latest.__format;
     clone.__indent = latest.__indent;
     clone.__dir = latest.__dir;
+    clone.__first = latest.__first;
+    clone.__last = latest.__last;
+    clone.__size = latest.__size;
   } else if ($isTextNode(latest) && $isTextNode(clone)) {
     clone.__format = latest.__format;
     clone.__style = latest.__style;
@@ -62,7 +66,19 @@ function $getIndexFromPossibleClone(
 ): number {
   const parentClone = nodeMap.get(parent.getKey());
   if ($isElementNode(parentClone)) {
-    return parentClone.__children.indexOf(node.getKey());
+    let next = parentClone.__first;
+    let index = 0;
+    while (next !== null) {
+      const child = nodeMap.get(next);
+      if (child != null) {
+        if (child.__key === node.getKey()) {
+          return index;
+        }
+        index++;
+        next = child.__next;
+      }
+      next = null;
+    }
   }
   return node.getIndexWithinParent();
 }
@@ -106,10 +122,26 @@ function $copyLeafNodeBranchToRoot(
           isLeftSide ? endingOffset : offset,
         );
       } else if ($isElementNode(clone)) {
-        clone.__children = clone.__children.slice(
-          isLeftSide ? offset : 0,
-          isLeftSide ? undefined : (offset || 0) + 1,
-        );
+        const start = isLeftSide ? offset : 0;
+        const end = isLeftSide ? clone.__size : (offset || 0) + 1;
+        let next = clone.__first;
+        let index = 0;
+        while (next !== null) {
+          const current = nodeMap.get(next);
+          if (current != null) {
+            if (index === start) {
+              clone.__first = current.__key;
+            }
+            if (index === end - 1) {
+              clone.__last = current.__key;
+              break;
+            }
+            index++;
+            next = current.__next;
+          }
+          next = null;
+        }
+        clone.__size = index + 1;
       }
       if ($isRootNode(parent)) {
         if (needsClone) {
@@ -184,7 +216,7 @@ function $cloneContentsImpl(
       firstNodeParent !== null &&
       (!firstNodeParent.canBeEmpty() || $isRootNode(firstNodeParent))
     ) {
-      const parentChildren = firstNodeParent.__children;
+      const parentChildren = firstNodeParent.getChildrenKeys();
       const parentChildrenLength = parentChildren.length;
       if (parentChildrenLength === nodesLength) {
         let areTheSame = true;
@@ -496,7 +528,7 @@ function $removeParentEmptyElements(startingNode: ElementNode): void {
   while (node !== null && !$isRootNode(node)) {
     const latest = node.getLatest();
     const parentNode = node.getParent();
-    if (latest.__children.length === 0) {
+    if (latest.__size === 0) {
       node.remove(true);
     }
     node = parentNode;
