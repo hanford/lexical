@@ -51,7 +51,6 @@ import {
   $getCompositionKey,
   $setCompositionKey,
   getCachedClassNameArray,
-  internalMarkSiblingsAsDirty,
   toggleTextFormatType,
 } from '../LexicalUtils';
 
@@ -680,15 +679,11 @@ export class TextNode extends LexicalNode {
         $setCompositionKey(siblingKey);
       }
       textSize = nextTextSize;
-      sibling.__parent = parentKey;
       splitNodes.push(sibling);
     }
 
     // Insert the nodes into the parent's children
-    internalMarkSiblingsAsDirty(this);
-    const writableParent = parent.getWritable();
     const insertionIndex = self.getIndexWithinParent();
-    const splitNodesKeys = splitNodes.map((splitNode) => splitNode.__key);
     if (hasReplacedSelf) {
       parent.splice(insertionIndex, 0, splitNodes);
       this.remove();
