@@ -28,6 +28,12 @@ import {initializeUnitTest} from '../utils';
 // with latest experimental React version.
 global.IS_REACT_ACT_ENVIRONMENT = true;
 
+function assertEditorStateEqualsJSONString(editor, jsonString) {
+  expect(JSON.parse(JSON.stringify(editor.getEditorState().toJSON()))).toEqual(
+    JSON.parse(jsonString),
+  );
+}
+
 describe('LexicalEditorState tests', () => {
   initializeUnitTest((testEnv) => {
     test('constructor', async () => {
@@ -59,21 +65,29 @@ describe('LexicalEditorState tests', () => {
 
       expect(root).toEqual({
         __cachedText: 'foo',
-        __children: ['1'],
         __dir: 'ltr',
+        __first: '1',
         __format: 0,
         __indent: 0,
         __key: 'root',
+        __last: '1',
+        __next: null,
         __parent: null,
+        __prev: null,
+        __size: 1,
         __type: 'root',
       });
       expect(paragraph).toEqual({
-        __children: ['2'],
         __dir: 'ltr',
+        __first: '2',
         __format: 0,
         __indent: 0,
         __key: '1',
+        __last: '2',
+        __next: null,
         __parent: 'root',
+        __prev: null,
+        __size: 1,
         __type: 'paragraph',
       });
       expect(text).toEqual({
@@ -81,7 +95,9 @@ describe('LexicalEditorState tests', () => {
         __format: 0,
         __key: '2',
         __mode: 0,
+        __next: null,
         __parent: '1',
+        __prev: null,
         __style: '',
         __text: 'foo',
         __type: 'text',
@@ -97,8 +113,9 @@ describe('LexicalEditorState tests', () => {
         paragraph.append(text);
         $getRoot().append(paragraph);
       });
-      expect(JSON.stringify(editor.getEditorState().toJSON())).toEqual(
-        `{\"_nodeMap\":[[\"root\",{\"__children\":[\"1\"],\"__dir\":\"ltr\",\"__format\":0,\"__indent\":0,\"__key\":\"root\",\"__parent\":null,\"__type\":\"root\"}],[\"1\",{\"__type\":\"paragraph\",\"__parent\":\"root\",\"__key\":\"1\",\"__children\":[\"2\"],\"__format\":0,\"__indent\":0,\"__dir\":\"ltr\"}],[\"2\",{\"__type\":\"text\",\"__parent\":\"1\",\"__key\":\"2\",\"__text\":\"Hello world\",\"__format\":0,\"__style\":\"\",\"__mode\":0,\"__detail\":0}]],\"_selection\":{\"anchor\":{\"key\":\"2\",\"offset\":6,\"type\":\"text\"},\"focus\":{\"key\":\"2\",\"offset\":11,\"type\":\"text\"},\"type\":\"range\"}}`,
+      assertEditorStateEqualsJSONString(
+        editor,
+        '{"_nodeMap":[["root",{"__first":"1","__last":"1","__prev":null,"__next":null,"__size":1,"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__first":"2","__last":"2","__prev":null,"__next":null,"__size":1,"__format":0,"__indent":0,"__dir":"ltr"}],["2",{"__type":"text","__parent":"1","__key":"2","__text":"Hello world","__format":0,"__style":"","__mode":0,"__detail":0,"__prev":null,"__next":null}]],"_selection":{"anchor":{"key":"2","offset":6,"type":"text"},"focus":{"key":"2","offset":11,"type":"text"},"type":"range"}}',
       );
     });
 
@@ -113,8 +130,9 @@ describe('LexicalEditorState tests', () => {
         paragraph.append(text);
         $getRoot().append(paragraph);
       });
-      expect(JSON.stringify(editor.getEditorState().toJSON())).toEqual(
-        '{"_nodeMap":[["root",{"__children":["1"],"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__children":["2"],"__format":0,"__indent":0,"__dir":"ltr"}],["2",{"__type":"text","__parent":"1","__key":"2","__text":"Hello world","__format":0,"__style":"","__mode":0,"__detail":0}]],"_selection":{"nodes":["2"],"type":"node"}}',
+      assertEditorStateEqualsJSONString(
+        editor,
+        '{"_nodeMap":[["root",{"__first":"1","__last":"1","__prev":null,"__next":null,"__size":1,"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__first":"2","__last":"2","__prev":null,"__next":null,"__size":1,"__format":0,"__indent":0,"__dir":"ltr"}],["2",{"__type":"text","__parent":"1","__key":"2","__text":"Hello world","__format":0,"__style":"","__mode":0,"__detail":0,"__prev":null,"__next":null}]],"_selection":{"nodes":["2"],"type":"node"}}',
       );
     });
 
@@ -131,9 +149,9 @@ describe('LexicalEditorState tests', () => {
         tableRow.append(tableCell);
         $getRoot().append(table);
       });
-
-      expect(JSON.stringify(editor.getEditorState().toJSON())).toEqual(
-        '{"_nodeMap":[["root",{"__children":["1"],"__dir":null,"__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"table","__parent":"root","__key":"1","__children":["2"],"__format":0,"__indent":0,"__dir":null}],["2",{"__type":"tablerow","__parent":"1","__key":"2","__children":["3"],"__format":0,"__indent":0,"__dir":null}],["3",{"__type":"tablecell","__parent":"2","__key":"3","__children":[],"__format":0,"__indent":0,"__dir":null,"__headerState":0}]],"_selection":{"anchor":{"key":"3","offset":0,"type":"element"},"focus":{"key":"3","offset":0,"type":"element"},"gridKey":"1","type":"grid"}}',
+      assertEditorStateEqualsJSONString(
+        editor,
+        '{"_nodeMap":[["root",{"__first":"1","__last":"1","__prev":null,"__next":null,"__size":1,"__dir":null,"__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"table","__parent":"root","__key":"1","__first":"2","__last":"2","__prev":null,"__next":null,"__size":1,"__format":0,"__indent":0,"__dir":null}],["2",{"__type":"tablerow","__parent":"1","__key":"2","__first":"3","__last":"3","__prev":null,"__next":null,"__size":1,"__format":0,"__indent":0,"__dir":null}],["3",{"__type":"tablecell","__parent":"2","__key":"3","__first":null,"__last":null,"__prev":null,"__next":null,"__size":0,"__format":0,"__indent":0,"__dir":null,"__headerState":0}]],"_selection":{"anchor":{"key":"3","offset":0,"type":"element"},"focus":{"key":"3","offset":0,"type":"element"},"gridKey":"1","type":"grid"}}',
       );
     });
 
@@ -157,12 +175,16 @@ describe('LexicalEditorState tests', () => {
             'root',
             {
               __cachedText: '',
-              __children: [],
               __dir: null,
+              __first: null,
               __format: 0,
               __indent: 0,
               __key: 'root',
+              __last: null,
+              __next: null,
               __parent: null,
+              __prev: null,
+              __size: 0,
               __type: 'root',
             },
           ],
