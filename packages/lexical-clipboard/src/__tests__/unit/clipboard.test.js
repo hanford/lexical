@@ -320,7 +320,6 @@ describe('Clipboard tests', () => {
         const state = $cloneSelectedContent(editor, selection);
         const rangeSet = new Set(state.range);
         const nodeMap = new Map(state.nodeMap);
-
         expect(nodeMap.size).toBe(5);
         expect(rangeSet.size).toBe(1);
 

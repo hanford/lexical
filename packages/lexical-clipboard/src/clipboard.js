@@ -259,7 +259,7 @@ function sanitizeClonedNodeLinks(
           currentNodeMapEntry.__first !== null &&
           currentNodeMapEntry.__last === null
         ) {
-          currentNodeMapEntry.__last = next;
+          currentNodeMapEntry.__last = next.__key;
           break;
         }
       }
