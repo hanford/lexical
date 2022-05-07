@@ -612,7 +612,6 @@ export class TextNode extends LexicalNode {
     }
     const firstPart = parts[0];
     const parent = self.getParentOrThrow();
-    const parentKey = parent.__key;
     let writableNode;
     const format = self.getFormat();
     const style = self.getStyle();
@@ -622,7 +621,6 @@ export class TextNode extends LexicalNode {
     if (self.isSegmented()) {
       // Create a new TextNode
       writableNode = $createTextNode(firstPart);
-      writableNode.__parent = parentKey;
       writableNode.__format = format;
       writableNode.__style = style;
       writableNode.__detail = detail;
@@ -683,7 +681,6 @@ export class TextNode extends LexicalNode {
     }
 
     // Insert the nodes into the parent's children
-    const insertionIndex = self.getIndexWithinParent();
     if (hasReplacedSelf) {
       let target = this;
       for (let i = 0; i < splitNodes.length; i++) {
@@ -696,6 +693,7 @@ export class TextNode extends LexicalNode {
         target = target.insertAfter(splitNodes[i]);
       }
     }
+    const insertionIndex = self.getIndexWithinParent();
 
     if ($isRangeSelection(selection)) {
       $updateElementSelectionOnCreateDeleteNode(
