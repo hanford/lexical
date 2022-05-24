@@ -75,6 +75,7 @@ function importBlocks(
   textFormatTransformersIndex: TextFormatTransformersIndex,
   textMatchTransformers: Array<TextMatchTransformer>,
 ) {
+  if (!lineText) return
   const textNode = $createTextNode(lineText);
   const elementNode = $createParagraphNode();
   elementNode.append(textNode);
@@ -83,7 +84,7 @@ function importBlocks(
   for (const {regExp, replace} of elementTransformers) {
     const match = lineText.match(regExp);
 
-    if (match) {
+    if (match && !isEmpty) {
       textNode.setTextContent(lineText.slice(match[0].length));
       replace(elementNode, [textNode], match, true);
       break;
